@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>   
+    <record id="fleet_vehicle_view_form_inherit" model="ir.ui.view">
+        <field name="name">Fleet Vehicle form inherit</field>
+        <field name="model">fleet.vehicle</field>
+        <field name="inherit_id" ref="fleet.fleet_vehicle_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//button[@name='return_action_to_open']" position="after">
+                <button     
+                type="object"
+                class="oe_stat_button" 
+                name="open_vehicle_fuel_records">
+                    <svg xmlns="http://www.w3.org/2000/svg" height="1.5em" viewBox="0 0 512 512"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. --><path d="M336 448H16c-8.8 0-16 7.2-16 16v32c0 8.8 7.2 16 16 16h320c8.8 0 16-7.2 16-16v-32c0-8.8-7.2-16-16-16zm157.2-340.7l-81-81c-6.2-6.2-16.4-6.2-22.6 0l-11.3 11.3c-6.2 6.2-6.2 16.4 0 22.6L416 97.9V160c0 28.1 20.9 51.3 48 55.2V376c0 13.2-10.8 24-24 24s-24-10.8-24-24v-32c0-48.6-39.4-88-88-88h-8V64c0-35.3-28.7-64-64-64H96C60.7 0 32 28.7 32 64v352h288V304h8c22.1 0 40 17.9 40 40v27.8c0 37.7 27 72 64.5 75.9 43 4.3 79.5-29.5 79.5-71.7V152.6c0-17-6.8-33.3-18.8-45.3zM256 192H96V64h160v128z"/></svg>
+                    <span style="margin-left: 1em;">Rifornimenti</span>
+                </button>
+            </xpath>
+            <xpath expr="//field[@name='acquisition_date']" position="before">
+                <field name="capacity_vehicle"/>
+                <field name="euro"/>
+                <field name="license_request"/>
+            </xpath>
+            <xpath expr="//label[@for='tag_ids']" position="before">
+                <label for="state_id"/>
+                <field name="state_id"/>
+            </xpath>
+        </field>
+    </record>
+    <record id="fleet_vehicle_view_tree_inherit" model="ir.ui.view">
+        <field name="name">Fleet Vehicle tree inherit</field>
+        <field name="model">fleet.vehicle</field>
+        <field name="inherit_id" ref="fleet.fleet_vehicle_view_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='category_id']" position="after">
+                <field name="capacity_vehicle"/>
+                <field name="euro"/>
+                <field name="license_request"/>
+            </xpath>
+        </field>
+    </record>
+    <record id="fleet_vehicle_view_search_inherit" model="ir.ui.view">
+        <field name="name">Fleet Vehicle search inherit</field>
+        <field name="model">fleet.vehicle</field>
+        <field name="inherit_id" ref="fleet.fleet_vehicle_view_search"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='state_id']" position="after">
+                <field name="capacity_vehicle"/>
+                <field name="euro"/>
+                <field name="license_request"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="fleet_vehicle_kanban_inherit" model="ir.ui.view">
+        <field name="name">Fleet Vehicle kanban inherit</field>
+        <field name="model">fleet.vehicle</field>
+        <field name="inherit_id" ref="fleet.fleet_vehicle_view_kanban"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[@class='o_kanban_image']" position="replace">
+                <div>
+                    <field name="state_id" attrs="{'invisible': [('state_id', '!=', 4)]}" style="color:red; font-weight: bold; margin-right: 1em;"/> <!-- Mezzo dismesso -->
+                    <field name="state_id" attrs="{'invisible': [('state_id', '!=', 8)]}" style="color:green; font-weight: bold; margin-right: 1em;"/> <!-- Mezzo attivo -->
+                    <field name="state_id" attrs="{'invisible': [('state_id', '!=', 5)]}" style="color:orange; font-weight: bold; margin-right: 1em;"/> <!-- Mezzo scorta -->
+                    <field name="state_id" attrs="{'invisible': [('state_id', '!=', 6)]}" style="color:violet; font-weight: bold; margin-right: 1em;"/> <!-- Mezzo sostitutivo -->
+                    <field name="state_id" attrs="{'invisible': [('state_id', '!=', 9)]}" style="color:gold; font-weight: bold; margin-right: 1em;"/> <!-- Mezzo in arrivo -->
+                    <br/>
+                    <div class="o_kanban_image" t-attf-style="background-image:url('#{kanban_image('fleet.vehicle', 'image_128', record.id.raw_value)}')"/>
+                </div>
+            </xpath>
+        </field>
+    </record>
+    
+</odoo>

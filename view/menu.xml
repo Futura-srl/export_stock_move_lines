@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<odoo>
+    <!-- MENU ROOT -->
+
+
+
+    <!-- MENU PRIMO LIVELLO -->
+
+
+    <!-- MENU ACTION -->
+
+    <menuitem id="fleet_fuel_menu_action"
+    action="fleet_fuel"
+    parent="fleet.fleet_vehicles"
+    name="Carburante"/>
+
+    <menuitem id="fleet_fuel_menu_category"
+    parent="fleet.fleet_configuration"
+    name="Fuel"/>
+
+    <menuitem id="fleet_fuel_type_menu_action"
+    action="fleet_fuel_type"
+    parent="fleet_fuel_menu_category"
+    name="Type of fuel"/>
+
+    <menuitem id="fleet_fuel_company_menu_action"
+    action="fleet_fuel_company"
+    parent="fleet_fuel_menu_category"
+    name="Fuel company"/>
+
+</odoo>

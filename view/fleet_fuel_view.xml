@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+
+    <!-- Relativo alla visualizzazione della tabella ad alberlo -->
+    <record id="fleet_fuel_views_tree" model="ir.ui.view">
+        <field name="name">Rifornimenti flotta</field>
+        <field name="model">fleet.fuel</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name" optional="hide"/>
+                <field name="res_partner_id"/>
+                <field name="reference"/>
+                <field name="point_sale_code" optional="hide"/>
+                <field name="location"/>
+                <field name="address" optional="hide"/>
+                <field name="transaction_datetime"/>
+                <field name="ticket" optional="hide"/>
+                <field name="driver_id"/>
+                <field name="card_number" optional="hide"/>
+                <field name="fleet_id"/>
+                <field name="product_id"/>
+                <field name="quantity"/>
+                <field name="price_unit" optional="hide"/>
+                <field name="price"/>
+                <field name="tax" optional="hide"/>
+                <field name="business_name_id"/>
+                <field name="invoice" optional="hide"/>
+                <field name="invoice_date" optional="hide"/>
+                <field name="invoice_discount" optional="hide"/>
+                <field name="tax_rate" optional="hide"/>
+                <field name="price_without_tax" optional="hide"/>
+            </tree>
+        </field>
+    </record>
+
+
+    <record id="fleet_fuel_views_form" model="ir.ui.view">
+        <field name="name">Modulo di Rifornimenti Flotta</field>
+        <field name="model">fleet.fuel</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <field name="state"  widget="statusbar" options="{'clickable': '1'}"/>
+                </header>
+                <sheet>
+                    <group>
+                        <field name="name" invisible="1"/>
+                        <field name="res_partner_id"/>
+                        <field name="reference"/>
+                        <field name="point_sale_code"/>
+                        <field name="location"/>
+                        <field name="address"/>
+                    </group>
+                    <group>
+                        <field name="transaction_datetime"/>
+                        <field name="ticket"/>
+                        <field name="driver_id"/>
+                        <field name="card_number"/>
+                        <field name="fleet_id"/>
+                    </group>
+                    <group>
+                        <field name="product_id"/>
+                        <field name="quantity"/>
+                        <field name="price_unit"/>
+                        <field name="price"/>
+                        <field name="tax"/>
+                    </group>
+                    <group>
+                        <field name="business_name_id"/>
+                        <field name="invoice"/>
+                        <field name="invoice_date"/>
+                        <field name="invoice_discount"/>
+                        <field name="tax_rate"/>
+                        <field name="price_without_tax"/>
+                    </group>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <record id="fleet_fuel_search" model="ir.ui.view">
+        <field name="name">fleet.fuel.search</field>
+        <field name="model">fleet.fuel</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="res_partner_id"/>
+                <field name="reference"/>
+                <field name="point_sale_code"/>
+                <field name="location"/>
+                <field name="address"/>
+                <field name="transaction_datetime"/>
+                <field name="ticket"/>
+                <field name="driver_id"/>
+                <field name="card_number"/>
+                <field name="fleet_id"/>
+                <field name="product_id"/>
+                <field name="quantity"/>
+                <field name="price_unit"/>
+                <field name="price"/>
+                <field name="tax"/>
+                <field name="business_name_id"/>
+                <field name="invoice"/>
+                <field name="invoice_date"/>
+                <field name="invoice_discount"/>
+                <field name="tax_rate"/>
+                <field name="price_without_tax"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="fleet_fuel" model="ir.actions.act_window">
+        <field name="name">Rifornimenti flotta</field>
+        <field name="res_model">fleet.fuel</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+
+
+</odoo>

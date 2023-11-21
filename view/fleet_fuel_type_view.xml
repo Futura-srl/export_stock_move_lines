@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="fleet_fuel_type" model="ir.actions.act_window">
+        <field name="name">Tipi di carburante flotta</field>
+        <field name="res_model">fleet.fuel.type</field>
+        <field name="view_mode">tree</field>
+    </record>
+
+    <!-- Relativo alla visualizzazione della tabella ad alberlo -->
+    <record id="fleet_fuel_type_views_tree" model="ir.ui.view">
+        <field name="name">Tipi di carburante flotta</field>
+        <field name="model">fleet.fuel.type</field>
+        <field name="arch" type="xml">
+            <tree string="Fleet Fuel Type" editable="bottom">
+                <field name="name"/>
+            </tree>
+        </field>
+    </record>
+
+</odoo>
