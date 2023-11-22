@@ -1,21 +1,26 @@
 from odoo import models
 from datetime import datetime, timedelta
 import base64
-import io
+import io, logging
 import xlsxwriter
 
-class FleetFieldsUpdate(models.Model):
+_logger = logging.getLogger(__name__)
+
+class StockMoveLineExport(models.Model):
     _name = "stock.export"
     _description = "stock move line export"
 
     def export_stock_move_lines_xlsx(self):
         # Calcola la data di tre giorni fa
         three_days_ago = datetime.now() - timedelta(days=3)
+        three_days_ago = three_days_ago.replace(hour=0, minute=0, second=0, microsecond=0)
         today = datetime.now()
 
         # Cerca i record degli ultimi tre giorni in stock.move.line
         stock_moves = self.env['stock.move.line'].search([('date', '>=', three_days_ago.strftime('%Y-%m-%d')), ('branch_id', '=', 1)])
 
+        _logger.info(three_days_ago)
+        
         # Costruisci il contenuto del file XLSX in memoria
         xlsx_content = io.BytesIO()
         workbook = xlsxwriter.Workbook(xlsx_content)
@@ -152,7 +157,7 @@ class FleetFieldsUpdate(models.Model):
         mail_values = {
             'subject': 'Movimentazioni stock Tito Scalo dal ' + three_days_ago.strftime('%d-%m-%Y') + ' al ' + today.strftime('%d-%m-%Y'),
             'email_from': 'noreply@futurasl.com',
-            'email_to': 'luca.cocozza@futurasl.com',
+            'email_to': 'dati+stocktito@futurasl.com',
             'body_html': '<p>Questa è una email con il file CSV allegato.</p>',
             'attachment_ids': [(4, attachment.id)],  # Aggiungi l'allegato all'email
         }
