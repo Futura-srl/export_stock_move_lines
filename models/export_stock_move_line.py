@@ -96,7 +96,7 @@ class StockMoveLineExport(models.Model):
         mail_values = {
             'subject': 'Movimentazioni stock Tito Scalo dal ' + three_days_ago.strftime('%d-%m-%Y') + ' al ' + today.strftime('%d-%m-%Y'),
             'email_from': 'noreply@futurasl.com',
-            'email_to': 'luca.cocozza@futurasl.com',
+            'email_to': 'dati+stocktito@svcfutura.cloud',
             'body_html': '<p>In allegato file .XLSX con le movimentazioni degli ultimi 3 giorni.</p>',
             'attachment_ids': [(4, attachment.id)],  # Aggiungi l'allegato all'email
         }
