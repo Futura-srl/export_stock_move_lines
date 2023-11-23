@@ -13,7 +13,7 @@
             <field name="numbercall">-1</field>
             <field name="doall" eval="False"/>
             <field name="priority" eval="5" />
-            <field name="nextcall" >2023-11-25 22:59:00</field>
+            <field name="nextcall" >2023-11-25 22:35:00</field>
         </record>
     </data>
 

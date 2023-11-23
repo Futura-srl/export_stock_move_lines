@@ -223,10 +223,10 @@ class StockMoveLineExport(models.Model):
         mail_values = {
             'subject': 'Inventario Ferrero Tito Scalo del ' + datetime.now().strftime('%d-%m-%Y'),
             'email_from': 'noreply@futurasl.com',
-            'email_to': 'domenico.gala@futurasl.com, michele.divincenzo@futurasl.com',
-            'email_cc': 'luca.cocozza@futurasl.com, fabio.righini@futurasl.com',
+            'email_to': 'antonio.croglia@ferrero.com',
+            'email_cc': 'domenico.gala@futurasl.com, michele.divincenzo@futurasl.com, luca.cocozza@futurasl.com, fabio.righini@futurasl.com',
             'reply_to': 'domenico.gala@futurasl.com, michele.divincenzo@futurasl.com',
-            'body_html': "<p>In allegato l'inventario del magazzino Ferrero di Tito Scalo (PZ).</p>",
+            'body_html': "<p>Salve,</br>in allegato copia inventario del magazzino Ferrero di Tito Scalo (PZ).</br></br>Futura S.p.A.</p>",
             'attachment_ids': [(4, attachment.id)],  # Aggiungi l'allegato all'email
         }
 
