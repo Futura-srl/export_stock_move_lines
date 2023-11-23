@@ -10,7 +10,7 @@ class StockMoveLineExport(models.Model):
     _name = "stock.export"
     _description = "stock move line export"
 
-    def export_stock_move_lines_xlsx(self):
+    def export_stock_move_lines_Ferrero_Tito_Scalo_xlsx(self):
         # Calcola la data di tre giorni fa
         three_days_ago = datetime.now() - timedelta(days=3)
         three_days_ago = three_days_ago.replace(hour=0, minute=0, second=0, microsecond=0)
@@ -169,7 +169,7 @@ class StockMoveLineExport(models.Model):
 
 
     # Funzione per esportare l'inventario di Tito Scalo
-    def export_inventory_xlsx(self):
+    def export_inventory_Ferrero_Tito_Scalo_xlsx(self):
         today = datetime.now().strftime('%d_%m_%Y')
 
         # Cerca i record degli ultimi tre giorni in stock.move.line
@@ -221,10 +221,11 @@ class StockMoveLineExport(models.Model):
 
         # Invia l'email con l'allegato
         mail_values = {
-            'subject': 'Inventario Ferrero Tito Scalo aggiornato al ' + datetime.now().strftime('%d-%m-%Y'),
+            'subject': 'Inventario Ferrero Tito Scalo del ' + datetime.now().strftime('%d-%m-%Y'),
             'email_from': 'noreply@futurasl.com',
-            'email_to': 'luca.cocozza@futurasl.com, fabio.righini@futurasl.com',
-            'email_cc': 'luca.cocozza@futurasl.com',
+            'email_to': 'domenico.gala@futurasl.com, michele.divincenzo@futurasl.com',
+            'email_cc': 'luca.cocozza@futurasl.com, fabio.righini@futurasl.com',
+            'reply_to': 'domenico.gala@futurasl.com, michele.divincenzo@futurasl.com',
             'body_html': "<p>In allegato l'inventario del magazzino Ferrero di Tito Scalo (PZ).</p>",
             'attachment_ids': [(4, attachment.id)],  # Aggiungi l'allegato all'email
         }
