@@ -6,6 +6,8 @@
     'description': "Esportazione stock move line.",
      'data': [
         # # Settaggi per accesso ai contenuti
-        'data/ir.model.access.csv',
+        'security/ir.model.access.csv',
+        # Cron job
+        'data/cron.xml',
     ],
 }

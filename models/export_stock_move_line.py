@@ -107,7 +107,7 @@ class StockMoveLineExport(models.Model):
 
 
 
-
+    # Esempio di funzione per creare file CSV.
     def export_stock_move_lines_csv(self):
         # Calcola la data di tre giorni fa
         three_days_ago = datetime.now() - timedelta(days=3)
@@ -166,6 +166,9 @@ class StockMoveLineExport(models.Model):
         mail = self.env['mail.mail'].sudo().create(mail_values)
         mail.send()
 
+
+
+    # Funzione per esportare l'inventario di Tito Scalo
     def export_inventory_xlsx(self):
 
         # Cerca i record degli ultimi tre giorni in stock.move.line
