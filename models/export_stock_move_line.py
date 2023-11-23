@@ -170,6 +170,7 @@ class StockMoveLineExport(models.Model):
 
     # Funzione per esportare l'inventario di Tito Scalo
     def export_inventory_xlsx(self):
+        today = datetime.now().strftime('%d_%m_%Y')
 
         # Cerca i record degli ultimi tre giorni in stock.move.line
         stock_inventory = self.env['stock.quant'].search(['|', ('location_id', 'ilike', "TITO/IN"), ('location_id', 'ilike', "TITO/ST")])
@@ -210,7 +211,7 @@ class StockMoveLineExport(models.Model):
         # Imposta l'allegato in Odoo come file XLSX
         xlsx_content.seek(0)
         attachment_values = {
-            'name': 'stock_inventory.xlsx',
+            'name': 'Inventario_Tito_Scalo_' + today + '.xlsx',
             'datas': base64.encodebytes(xlsx_content.getvalue()).decode(),
             'res_model': self._name,
             'res_id': self.id,
@@ -220,9 +221,10 @@ class StockMoveLineExport(models.Model):
 
         # Invia l'email con l'allegato
         mail_values = {
-            'subject': 'Inventario Ferrero Tito Scalo',
+            'subject': 'Inventario Ferrero Tito Scalo aggiornato al ' + datetime.now().strftime('%d-%m-%Y'),
             'email_from': 'noreply@futurasl.com',
             'email_to': 'luca.cocozza@futurasl.com, fabio.righini@futurasl.com',
+            'email_cc': 'luca.cocozza@futurasl.com',
             'body_html': "<p>In allegato l'inventario del magazzino Ferrero di Tito Scalo (PZ).</p>",
             'attachment_ids': [(4, attachment.id)],  # Aggiungi l'allegato all'email
         }
