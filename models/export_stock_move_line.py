@@ -171,6 +171,7 @@ class StockMoveLineExport(models.Model):
     # Funzione per esportare l'inventario di Tito Scalo
     def export_inventory_Ferrero_Tito_Scalo_xlsx(self):
         today = datetime.now().strftime('%d_%m_%Y')
+        export_datetime = datetime.now().strftime('%d/%m/%Y %H:%M:%S')
 
         # Cerca i record degli ultimi tre giorni in stock.move.line
         stock_inventory = self.env['stock.quant'].search(['|', ('location_id', 'ilike', "TITO/IN"), ('location_id', 'ilike', "TITO/ST")])
@@ -181,7 +182,7 @@ class StockMoveLineExport(models.Model):
         workbook = xlsxwriter.Workbook(xlsx_content)
         worksheet = workbook.add_worksheet()
 
-        headers = ['Articolo', "Lotto", "Hu", "Qty"]
+        headers = ["Articolo", "Descrizione", "Lotto", "Hu", "Quantità", "Estratto il"]
 
         # Aggiungi gli header alla prima riga
         for col, header in enumerate(headers):
@@ -194,15 +195,19 @@ class StockMoveLineExport(models.Model):
             lot = self.env['stock.lot'].browse(record.lot_id.id)
             package = self.env['stock.quant.package'].browse(record.package_id.id)
             
-            _logger.info(product.display_name)
+            _logger.info(product.barcode)
+            _logger.info(product.name)
             _logger.info(lot.name)
             _logger.info(package.name)
             _logger.info(record.quantity)
+            _logger.info(export_datetime)
 
-            worksheet.write(row, 0, str(product.display_name))
-            worksheet.write(row, 1, str(lot.name))
-            worksheet.write(row, 2, str(package.name))
-            worksheet.write(row, 3, str(record.quantity))
+            worksheet.write(row, 0, str(product.barcode))
+            worksheet.write(row, 1, str(product.name))
+            worksheet.write(row, 2, str(lot.name))
+            worksheet.write(row, 3, str(package.name))
+            worksheet.write(row, 4, str(record.quantity))
+            worksheet.write(row, 5, str(export_datetime))
 
             row += 1  # Passa alla riga successiva per il prossimo stock_move
 
@@ -221,7 +226,7 @@ class StockMoveLineExport(models.Model):
 
         # Invia l'email con l'allegato
         mail_values = {
-            'subject': 'Inventario Ferrero Tito Scalo del ' + datetime.now().strftime('%d-%m-%Y'),
+            'subject': 'Inventario Ferrero Tito Scalo del ' + export_datetime,
             'email_from': 'noreply@futurasl.com',
             'email_to': 'antonio.croglia@ferrero.com',
             'email_cc': 'domenico.gala@futurasl.com, michele.divincenzo@futurasl.com, luca.cocozza@futurasl.com, fabio.righini@futurasl.com',
