@@ -238,3 +238,73 @@ class StockMoveLineExport(models.Model):
         # Crea e invia l'email utilizzando il metodo create di mail.mail
         mail = self.env['mail.mail'].sudo().create(mail_values)
         mail.send()
+                # Funzione per esportare l'inventario di Tito Scalo
+    def export_daily_inventory_Ferrero_Tito_Scalo_xlsx(self):
+        today = datetime.now().strftime('%d_%m_%Y')
+        export_datetime = datetime.now().strftime('%d/%m/%Y %H:%M:%S')
+
+        # Cerca i record degli ultimi tre giorni in stock.move.line
+        stock_inventory = self.env['stock.quant'].search(['|', ('location_id', 'ilike', "TITO/IN"), ('location_id', 'ilike', "TITO/ST")])
+
+        
+        # Costruisci il contenuto del file XLSX in memoria
+        xlsx_content = io.BytesIO()
+        workbook = xlsxwriter.Workbook(xlsx_content)
+        worksheet = workbook.add_worksheet()
+
+        headers = ["Articolo", "Descrizione", "Lotto", "Hu", "Quantità", "Estratto il"]
+
+        # Aggiungi gli header alla prima riga
+        for col, header in enumerate(headers):
+            worksheet.write(0, col, header)
+
+        row = 1  # Inizia dalla seconda riga per i dati
+        for record in stock_inventory:
+
+            product = self.env['product.product'].browse(record.product_id.id)
+            lot = self.env['stock.lot'].browse(record.lot_id.id)
+            package = self.env['stock.quant.package'].browse(record.package_id.id)
+            
+            _logger.info(product.barcode)
+            _logger.info(product.name)
+            _logger.info(lot.name)
+            _logger.info(package.name)
+            _logger.info(record.quantity)
+            _logger.info(export_datetime)
+
+            worksheet.write(row, 0, str(product.barcode))
+            worksheet.write(row, 1, str(product.name))
+            worksheet.write(row, 2, str(lot.name))
+            worksheet.write(row, 3, str(package.name))
+            worksheet.write(row, 4, str(record.quantity))
+            worksheet.write(row, 5, str(export_datetime))
+
+            row += 1  # Passa alla riga successiva per il prossimo stock_move
+
+        workbook.close()
+
+        # Imposta l'allegato in Odoo come file XLSX
+        xlsx_content.seek(0)
+        attachment_values = {
+            'name': 'Inventario_Tito_Scalo_' + today + '.xlsx',
+            'datas': base64.encodebytes(xlsx_content.getvalue()).decode(),
+            'res_model': self._name,
+            'res_id': self.id,
+            'type': 'binary',
+        }
+        attachment = self.env['ir.attachment'].create(attachment_values)
+
+        # Invia l'email con l'allegato
+        mail_values = {
+            'subject': 'Inventario Ferrero Tito Scalo del ' + export_datetime,
+            'email_from': 'noreply@futurasl.com',
+            'email_to': 'domenico.gala@futurasl.com, michele.divincenzo@futurasl.com',
+            'email_cc': ', luca.cocozza@futurasl.com, fabio.righini@futurasl.com',
+            'reply_to': 'domenico.gala@futurasl.com, michele.divincenzo@futurasl.com',
+            'body_html': f"<p>Salve,</br>in allegato copia inventario del magazzino Ferrero di Tito Scalo (PZ) aggiornato al {export_datetime}.</br></br>Futura S.p.A.</p>",
+            'attachment_ids': [(4, attachment.id)],  # Aggiungi l'allegato all'email
+        }
+
+        # Crea e invia l'email utilizzando il metodo create di mail.mail
+        mail = self.env['mail.mail'].sudo().create(mail_values)
+        mail.send()
