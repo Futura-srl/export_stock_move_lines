@@ -103,6 +103,7 @@ class GtmsTripExport(models.Model):
             if len(gtms_trip[0]['all_drivers_ids']) == 1:
                 driver_1_id = gtms_trip[0]['all_drivers_ids'][0]
                 driver_1 = self.env['res.partner'].search_read([('id', '=', driver_1_id)], ['name'])[0]['name']
+                driver_2_id = ''
                 driver_2 = ''
             elif len(gtms_trip[0]['all_drivers_ids']) == 2:
                 driver_1_id = gtms_trip[0]['all_drivers_ids'][0]
