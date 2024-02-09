@@ -28,7 +28,7 @@ class GtmsTripExport(models.Model):
         workbook = xlsxwriter.Workbook(xlsx_content)
         worksheet = workbook.add_worksheet()
 
-        headers = ['Id', 'Codice Viaggio', 'Trip Type', 'Source Document', 'From', 'Datetime start pianificato', 'To', 'Datetime end pianificato', 'Organization', 'N Stops', 'Datetime start sondaggio', 'Datetime end sondaggio', 'Vehicle', 'Driver', 'Driver learning', 'Modalità pagamento', 'State']
+        headers = ['Id', 'Codice Viaggio', 'Trip Type', 'Source Document', 'From', 'Datetime start pianificato', 'To', 'Datetime end pianificato', 'Organization', 'N Stops', 'Datetime start sondaggio', 'Datetime end sondaggio', 'Vehicle', 'ID Driver', 'Driver', 'ID Learning Driver', 'Driver learning', 'Modalità pagamento', 'State']
 
         # Aggiungi gli header alla prima riga
         for col, header in enumerate(headers):
@@ -41,12 +41,19 @@ class GtmsTripExport(models.Model):
             # record_id = int(str(id).split('(')[1].split(',')[0])
             _logger.info(gtms_trip)
             id = gtms_trip[0]['id']
-            trip_name = gtms_trip[0]['name']
+            if gtms_trip[0]['name'] != False:
+                trip_name = gtms_trip[0]['name']
+            else:
+                trip_name = ''
+                
             if gtms_trip[0]['trip_type_id'] != False:
                 trip_type_id = gtms_trip[0]['trip_type_id'][1]
             else:
                 trip_type_id = ''
-            source_document = gtms_trip[0]['source_document']
+            if gtms_trip[0]['source_document'] != False:
+                source_document = gtms_trip[0]['source_document']
+            else:
+                source_document = ''
             if gtms_trip[0]['from_address_partner_id'] != False:
                 from_address_partner_id = gtms_trip[0]['from_address_partner_id'][1]
             else:
@@ -61,13 +68,13 @@ class GtmsTripExport(models.Model):
                 utc_dt = pytz.utc.localize(first_stop_planned_at)
                 first_stop_planned_at = utc_dt.astimezone(pytz.timezone('Europe/Rome'))
             else:
-                first_stop_planned_at = False
+                first_stop_planned_at = ''
             if gtms_trip[0]['last_stop_planned_at'] != False:
                 last_stop_planned_at = gtms_trip[0]['last_stop_planned_at']
                 utc_dt = pytz.utc.localize(last_stop_planned_at)
                 last_stop_planned_at = utc_dt.astimezone(pytz.timezone('Europe/Rome'))
             else:
-                last_stop_planned_at = False
+                last_stop_planned_at = ''
 
             if gtms_trip[0]['organization_id'] != False:
                 organization_id = gtms_trip[0]['organization_id'][1]
@@ -80,13 +87,13 @@ class GtmsTripExport(models.Model):
                 utc_dt = pytz.utc.localize(trip_start_from_survey)
                 trip_start_from_survey = utc_dt.astimezone(pytz.timezone('Europe/Rome'))
             else:
-                trip_start_from_survey = False
+                trip_start_from_survey = ''
             if gtms_trip[0]['trip_end_from_survey'] != False:
                 trip_end_from_survey = gtms_trip[0]['trip_end_from_survey']
                 utc_dt = pytz.utc.localize(trip_end_from_survey)
                 trip_end_from_survey = utc_dt.astimezone(pytz.timezone('Europe/Rome'))
             else:
-                trip_end_from_survey = False                
+                trip_end_from_survey = ''                
             
             if gtms_trip[0]['current_fleet_id'] != False:
                 current_fleet_id = gtms_trip[0]['current_fleet_id'][1].split('/')[2]
@@ -94,14 +101,19 @@ class GtmsTripExport(models.Model):
                 current_fleet_id = ''
             all_drivers_ids = gtms_trip[0]['all_drivers_ids'] 
             if len(gtms_trip[0]['all_drivers_ids']) == 1:
-                driver_1 = gtms_trip[0]['all_drivers_ids'][0]
+                driver_1_id = gtms_trip[0]['all_drivers_ids'][0]
+                driver_1 = self.env['res.partner'].search_read([('id', '=', driver_1_id)], ['name'])[0]['name']
                 driver_2 = ''
             elif len(gtms_trip[0]['all_drivers_ids']) == 2:
-                driver_1 = gtms_trip[0]['all_drivers_ids'][0]
-                driver_2 = gtms_trip[0]['all_drivers_ids'][1]
+                driver_1_id = gtms_trip[0]['all_drivers_ids'][0]
+                driver_1 = self.env['res.partner'].search_read([('id', '=', driver_1_id)], ['name'])[0]['name']
+                driver_2_id = gtms_trip[0]['all_drivers_ids'][1]
+                driver_2 = self.env['res.partner'].search_read([('id', '=', driver_2_id)], ['name'])[0]['name']
             else:
                 driver_1 = ''
                 driver_2 = ''
+                driver_1_id = ''
+                driver_2_id = ''
             drivers_payment = gtms_trip[0]['drivers_payment']
             state = gtms_trip[0]['state']
 
@@ -120,8 +132,11 @@ class GtmsTripExport(models.Model):
             _logger.info(trip_end_from_survey)
             _logger.info(organization_id)
             _logger.info(current_fleet_id)
+            _logger.info("Strampa driver")
             _logger.info(all_drivers_ids)
+            _logger.info(driver_1_id)
             _logger.info(driver_1)
+            _logger.info(driver_2_id)
             _logger.info(driver_2)
             _logger.info(drivers_payment)
             _logger.info(state)
@@ -141,10 +156,12 @@ class GtmsTripExport(models.Model):
             worksheet.write(row, 10, str(trip_start_from_survey))
             worksheet.write(row, 11, str(trip_end_from_survey))
             worksheet.write(row, 12, str(current_fleet_id))
-            worksheet.write(row, 13, str(driver_1))
-            worksheet.write(row, 14, str(driver_2))
-            worksheet.write(row, 15, str(drivers_payment))
-            worksheet.write(row, 16, str(state))
+            worksheet.write(row, 13, str(driver_1_id))
+            worksheet.write(row, 14, str(driver_1))
+            worksheet.write(row, 15, str(driver_2_id))
+            worksheet.write(row, 16, str(driver_2))
+            worksheet.write(row, 17, str(drivers_payment))
+            worksheet.write(row, 18, str(state))
 
 
 
