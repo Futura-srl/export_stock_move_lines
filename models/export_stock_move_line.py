@@ -437,9 +437,9 @@ class StockMoveLineExport(models.Model):
             mail_values = {
                 'subject': 'Bancali ingressati nel mese ' + current_month + "/" + current_year,
                 'email_from': 'noreply@futurasl.com',
-                'email_to': 'luca.cocozza@futurasl.com',
-                # 'email_cc': ', luca.cocozza@futurasl.com, fabio.righini@futurasl.com',
-                # 'reply_to': 'domenico.gala@futurasl.com, michele.divincenzo@futurasl.com',
+                'email_to': 'antonio.croglia@ferrero.com',
+                'email_cc': 'domenico.gala@futurasl.com, michele.divincenzo@futurasl.com, luca.cocozza@futurasl.com, fabio.righini@futurasl.com',
+                'reply_to': 'domenico.gala@futurasl.com, michele.divincenzo@futurasl.com',
                 'body_html': f"<p>Salve,</br>in allegato bancali ingressati nel mese corrente nel magazzino Ferrero di Tito Scalo (PZ) aggiornato al {last_date.strftime('%d/%m/%Y')}.</br></br>Futura S.p.A.</p>",
                 'attachment_ids': [(4, attachment.id)],  # Aggiungi l'allegato all'email
             }
