@@ -310,7 +310,8 @@ class StockMoveLineExport(models.Model):
         mail.send()
 
 
-    def check(self):
+    def check(self,end_weekday):
+        today = datetime.now().date()
         def last_weekday_of_month(year, month, start_weekday, end_weekday):
             # Trova l'ultimo giorno del mese
             last_day_of_month = datetime(year, month+1, 1)
@@ -326,19 +327,17 @@ class StockMoveLineExport(models.Model):
             return last_day_of_month
     
         # Definisci l'anno e il mese
-        test_year = 2024
-        test_month = 8  #  1 per gennaio, 2 per febbraio, ...
+        test_year = today.year
+        test_month = today.month  #  1 per gennaio, 2 per febbraio, ...
     
         # Definisci gli indici per lunedì e sabato
         start_weekday = 0  # Lunedì
-        end_weekday = 5    # Sabato
+        # end_weekday = 5    # Sabato
     
         # Trova l'ultimo giorno del mese specificato che ricade tra lunedì e sabato
         last_day = last_weekday_of_month(test_year, test_month, start_weekday, end_weekday)
     
         # Verifica se last_day corrisponde al giorno odierno
-        today = datetime.now().date()
-    
         print("L'ultimo giorno del mese corrente che ricade tra lunedì e sabato è:", last_day.strftime('%Y-%m-%d'))
         if last_day.date() == today:
             print("L'ultimo giorno del mese corrente corrisponde al giorno odierno:", today.strftime('%Y-%m-%d'))
@@ -350,7 +349,7 @@ class StockMoveLineExport(models.Model):
 
     
     def export_pallet_in_fepz(self):
-        result = self.check()
+        result = self.check(5)
         if result == False:
             _logger.info("La data non è giusta")
         else:
@@ -448,4 +447,45 @@ class StockMoveLineExport(models.Model):
             mail = self.env['mail.mail'].sudo().create(mail_values)
             mail.send()
         
-        
+    # Questa funzione serve a mandare un reminder ai rop di Tito avvisandoli che entro le ore 23:00 del giorno stesso devono essere convalidati tutti gli ordini di merce che sono stati preparati    
+    def reminder_close_order(self):
+        result_in = self.check(4)
+        result_stock = self.check(5)
+        _logger.info("Controllo se la data è quella corretta per l'invio del file relativo ai pallet ingressati")
+        if result_in == False:
+            _logger.info("La data non è giusta")
+        else:
+            _logger.info("La data è giusta")
+            _logger.info("Avvisare FEPZ che prima di chiudere il magazzino devono sistemare tutti gli ingressi perchè alle 23:45 viene inviato il file a Ferrero")
+            # Invia l'email con l'allegato
+            mail_values = {
+                'subject': 'Reminder chiusura mensile ricezioni',
+                'email_from': 'noreply@futurasl.com',
+                'email_to': 'domenico.gala@futurasl.com, michele.divincenzo@futurasl.com',
+                'email_cc': 'luca.cocozza@futurasl.com, fabio.righini@futurasl.com',
+                'reply_to': 'domenico.gala@futurasl.com, michele.divincenzo@futurasl.com',
+                'body_html': f"<p>Salve,</br>stasera entro le ore 23:00 tutti i ricevimenti dovranno essere convalidati in quanto verrà inviata una mail con in allegato file excel riepilogativo di tutti i bancali ingressati.</br></br>Futura S.p.A.</p>",
+            }
+    
+            # Crea e invia l'email utilizzando il metodo create di mail.mail
+            mail = self.env['mail.mail'].sudo().create(mail_values)
+            mail.send()
+        _logger.info("Controllo se la data è quella corretta per l'invio del file relativo ai pallet a stock")
+        if result_stock == False:
+            _logger.info("La data non è giusta")
+        else:
+            _logger.info("La data è giusta")
+            _logger.info("Avvisare FEPZ che prima di chiuedere il magazzino devono sistemare tutti gli ingressi e ordini di uscita perchè alle 23:45 viene inviato l'inventario a Ferrero")
+            # Invia l'email con l'allegato
+            mail_values = {
+                'subject': 'Reminder chiusura mensile ordini consegna',
+                'email_from': 'noreply@futurasl.com',
+                'email_to': 'domenico.gala@futurasl.com, michele.divincenzo@futurasl.com',
+                'email_cc': 'luca.cocozza@futurasl.com, fabio.righini@futurasl.com',
+                'reply_to': 'domenico.gala@futurasl.com, michele.divincenzo@futurasl.com',
+                'body_html': f"<p>Salve,</br>stasera entro le ore 23:00 tutti gli ordini di consegna, per il quale è stata emessa fattura SAP, dovranno essere convalidati in quanto verrà inviata una mail con in allegato file Excel riepilogativo di tutto lo stock presente a magazzino.</br></br>Futura S.p.A.</p>",
+            }
+    
+            # Crea e invia l'email utilizzando il metodo create di mail.mail
+            mail = self.env['mail.mail'].sudo().create(mail_values)
+            mail.send()
