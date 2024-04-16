@@ -10,9 +10,9 @@ class StockMoveLineExport(models.Model):
     _name = "stock.export"
     _description = "stock move line export"
 
-    def export_stock_move_lines_Ferrero_Tito_Scalo_xlsx(self):
+    def export_stock_move_lines_Ferrero_Tito_Scalo_xlsx(self, n_days):
         # Calcola la data di tre giorni fa
-        three_days_ago = datetime.now() - timedelta(days=3)
+        three_days_ago = datetime.now() - timedelta(days=n_days)
         three_days_ago = three_days_ago.replace(hour=0, minute=0, second=0, microsecond=0)
         today = datetime.now()
 
@@ -97,7 +97,7 @@ class StockMoveLineExport(models.Model):
             'subject': 'Movimentazioni stock Tito Scalo dal ' + three_days_ago.strftime('%d-%m-%Y') + ' al ' + today.strftime('%d-%m-%Y'),
             'email_from': 'noreply@futurasl.com',
             'email_to': 'dati+stocktito@svcfutura.cloud',
-            'body_html': '<p>In allegato file .XLSX con le movimentazioni degli ultimi 3 giorni.</p>',
+            'body_html': '<p>In allegato file .XLSX con le movimentazioni degli ultimi '+ str(n_days) + ' giorni.</p>',
             'attachment_ids': [(4, attachment.id)],  # Aggiungi l'allegato all'email
         }
 
