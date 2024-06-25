@@ -238,6 +238,7 @@ class StockMoveLineExport(models.Model):
         # Crea e invia l'email utilizzando il metodo create di mail.mail
         mail = self.env['mail.mail'].sudo().create(mail_values)
         mail.send()
+        
                 # Funzione per esportare l'inventario di Tito Scalo
     def export_daily_inventory_Ferrero_Tito_Scalo_xlsx(self):
         today = datetime.now().strftime('%d_%m_%Y')
@@ -384,7 +385,7 @@ class StockMoveLineExport(models.Model):
             _logger.info(last_date)
     
             # Cerca i record degli ultimi tre giorni in stock.move.line
-            stock_inventory = self.env['stock.move.line'].search([('location_id', 'ilike', "TITO/IN"), ('date', '>=', first_date), ('date', '<=', last_date)])
+            stock_inventory = self.env['stock.move.line'].search([('date', '>=', first_date), ('date', '<=', last_date), '|', ('location_id', 'ilike', "TITO/IN"), ('location_dest_id', 'ilike', "Customer"), ])
     
             
             # Costruisci il contenuto del file XLSX in memoria
@@ -392,7 +393,7 @@ class StockMoveLineExport(models.Model):
             workbook = xlsxwriter.Workbook(xlsx_content)
             worksheet = workbook.add_worksheet()
     
-            headers = ["Articolo", "Descrizione", "Lotto", "Hu", "Quantità"]
+            headers = ["Articolo", "Descrizione", "Lotto", "Hu", "Quantità", "Azione"]
     
             # Aggiungi gli header alla prima riga
             for col, header in enumerate(headers):
@@ -410,12 +411,20 @@ class StockMoveLineExport(models.Model):
                 _logger.info(lot.name)
                 _logger.info(package.name)
                 _logger.info(record.qty_done)
-    
+                action = ""
+                _logger.info(record.location_id.name)
+                if record.location_id.name == "IN":
+                    action = "Ricevuto da Tito"
+                elif record.location_dest_id.name == "Customers":
+                    action = "Spedito da Tito"
+                    
+                
                 worksheet.write(row, 0, str(product.barcode))
                 worksheet.write(row, 1, str(product.name))
                 worksheet.write(row, 2, str(lot.name))
                 worksheet.write(row, 3, str(package.name))
                 worksheet.write(row, 4, str(record.qty_done))
+                worksheet.write(row, 5, str(action))
     
                 row += 1  # Passa alla riga successiva per il prossimo stock_move
     
