@@ -229,7 +229,7 @@ class StockMoveLineExport(models.Model):
             'subject': 'Inventario Ferrero Tito Scalo del ' + export_datetime,
             'email_from': 'noreply@futurasl.com',
             'email_to': 'antonio.croglia@ferrero.com',
-            'email_cc': 'domenico.gala@futurasl.com, michele.divincenzo@futurasl.com, luca.cocozza@futurasl.com, fabio.righini@futurasl.com, assistenza@futurasl.com',
+            'email_cc': 'domenico.gala@futurasl.com, michele.divincenzo@futurasl.com, luca.cocozza@futurasl.com, fabio.righini@futurasl.com',
             'reply_to': 'domenico.gala@futurasl.com, michele.divincenzo@futurasl.com',
             'body_html': "<p>Salve,</br>in allegato copia inventario del magazzino Ferrero di Tito Scalo (PZ).</br></br>Futura S.p.A.</p>",
             'attachment_ids': [(4, attachment.id)],  # Aggiungi l'allegato all'email
@@ -414,7 +414,7 @@ class StockMoveLineExport(models.Model):
                 action = ""
                 _logger.info(record.location_id.name)
                 if record.location_id.name == "IN":
-                    action = "Ricevuto da Tito"
+                    action = "Ricevuto a Tito"
                 elif record.location_dest_id.name == "Customers":
                     action = "Spedito da Tito"
                     
@@ -443,12 +443,12 @@ class StockMoveLineExport(models.Model):
     
             # Invia l'email con l'allegato
             mail_values = {
-                'subject': 'Bancali ingressati nel mese ' + current_month + "/" + current_year,
+                'subject': 'Bancali movimentati nel mese ' + current_month + "/" + current_year,
                 'email_from': 'noreply@futurasl.com',
                 'email_to': 'antonio.croglia@ferrero.com',
                 'email_cc': 'domenico.gala@futurasl.com, michele.divincenzo@futurasl.com, luca.cocozza@futurasl.com, fabio.righini@futurasl.com, assistenza@futurasl.com',
                 'reply_to': 'domenico.gala@futurasl.com, michele.divincenzo@futurasl.com',
-                'body_html': f"<p>Salve,</br>in allegato bancali ingressati nel mese corrente nel magazzino Ferrero di Tito Scalo (PZ) aggiornato al {last_date.strftime('%d/%m/%Y')}.</br></br>Futura S.p.A.</p>",
+                'body_html': f"<p>Salve,</br>in allegato bancali movimentati nel mese corrente nel magazzino Ferrero di Tito Scalo (PZ) aggiornato al {last_date.strftime('%d/%m/%Y')}.</br></br>Futura S.p.A.</p>",
                 'attachment_ids': [(4, attachment.id)],  # Aggiungi l'allegato all'email
             }
     
