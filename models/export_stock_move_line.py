@@ -311,150 +311,156 @@ class StockMoveLineExport(models.Model):
         mail.send()
 
 
+    def last_weekday_of_month(self, year, month, start_weekday, end_weekday):
+        _logger.info(f"dentro last_weekday_of_month 1")
+        # Trova l'ultimo giorno del mese
+        last_day_of_month = datetime(year, month+1, 1)
+        last_day_of_month = last_day_of_month.replace(day=1) - timedelta(days=1)
+
+        # Lista dei giorni candidati: 27, 28, 29, 30, 31 (se presente)
+        candidate_days = [27, 28, 29, 30, 31] if month in [1, 3, 5, 7, 8, 10, 12] else [27, 28, 29, 30]
+
+        # Itera all'indietro fino a trovare il giorno richiesto
+        while last_day_of_month.day not in candidate_days or last_day_of_month.weekday() not in range(start_weekday, end_weekday + 1):
+            last_day_of_month -= timedelta(days=1)
+
+        _logger.info(last_day_of_month)
+        return last_day_of_month
+
     def check(self,end_weekday):
         today = datetime.now().date()
-        def last_weekday_of_month(year, month, start_weekday, end_weekday):
-            # Trova l'ultimo giorno del mese
-            last_day_of_month = datetime(year, month+1, 1)
-            last_day_of_month = last_day_of_month.replace(day=1) - timedelta(days=1)
-    
-            # Lista dei giorni candidati: 27, 28, 29, 30, 31 (se presente)
-            candidate_days = [27, 28, 29, 30, 31] if month in [1, 3, 5, 7, 8, 10, 12] else [27, 28, 29, 30]
-    
-            # Itera all'indietro fino a trovare il giorno richiesto
-            while last_day_of_month.day not in candidate_days or last_day_of_month.weekday() not in range(start_weekday, end_weekday + 1):
-                last_day_of_month -= timedelta(days=1)
-    
-            return last_day_of_month
+        _logger.info(f"Oggi siamo il {today}")
+        
     
         # Definisci l'anno e il mese
         test_year = today.year
         test_month = today.month  #  1 per gennaio, 2 per febbraio, ...
+        _logger.info(f"Ho definito anno e mese")
     
         # Definisci gli indici per lunedì e sabato
         start_weekday = 0  # Lunedì
         # end_weekday = 5    # Sabato
     
         # Trova l'ultimo giorno del mese specificato che ricade tra lunedì e sabato
-        last_day = last_weekday_of_month(test_year, test_month, start_weekday, end_weekday)
+        last_day = self.last_weekday_of_month(test_year, test_month, start_weekday, end_weekday)
+        # _logger.info(f"L'ultimo giorno del mese corrente che ricade tra lunedì e sabato è: {last_day.strftime('%Y-%m-%d')}")
     
         # Verifica se last_day corrisponde al giorno odierno
-        print("L'ultimo giorno del mese corrente che ricade tra lunedì e sabato è:", last_day.strftime('%Y-%m-%d'))
+        _logger.info(f"L'ultimo giorno del mese corrente che ricade tra lunedì e sabato è: {last_day.strftime('%Y-%m-%d')}")
         if last_day.date() == today:
-            print("L'ultimo giorno del mese corrente corrisponde al giorno odierno:", today.strftime('%Y-%m-%d'))
+            _logger.info(f"L'ultimo giorno del mese corrente corrisponde al giorno odierno: {today.strftime('%Y-%m-%d')}")
             return True
         else:
-            print("L'ultimo giorno del mese corrente non corrisponde al giorno odierno:", today.strftime('%Y-%m-%d'))
+            _logger.info(f"L'ultimo giorno del mese corrente non corrisponde al giorno odierno: {today.strftime('%Y-%m-%d')}")
             return False
-        self.last_weekday_of_month()
 
     
     def export_pallet_in_fepz(self):
-        result = self.check(5)
-        if result == False:
-            _logger.info("La data non è giusta")
-        else:
-            _logger.info("La data è giusta")
+        # result = self.check(5)
+        # if result == False:
+        #     _logger.info("La data non è giusta")
+        # else:
+        #     _logger.info("La data è giusta")
+        
+        # Ottieni la data odierna
+        today_datetime = datetime.now()
+    
+        # Ottieni la data odierna in formato 'dd_mm_YYYY'
+        today = today_datetime.strftime('%d_%m_%Y')
+    
+        # Ottieni il mese corrente e l'anno corrente
+        current_month = today_datetime.strftime('%m')
+        current_year = today_datetime.strftime('%Y')
+    
+        # Log delle informazioni
+        _logger.info(today)
+        _logger.info(current_month)
+        _logger.info(current_year)
+    
+        # Ottieni il primo giorno del mese corrente
+        first_date = today_datetime.replace(day=1,hour=00, minute=00, second=00)
+    
+        # Ottieni l'ultimo giorno del mese corrente
+        # Imposta prima l'ultimo giorno al primo giorno del mese successivo
+        # quindi sottrai un giorno per ottenere l'ultimo giorno del mese corrente
+        last_date = today_datetime.replace(day=1, month=today_datetime.month + 1)
+        last_date = (last_date - timedelta(days=1)).replace(hour=23, minute=59, second=59)
+    
+        # Log delle informazioni
+        _logger.info(first_date)
+        _logger.info(last_date)
+
+        # Cerca i record degli ultimi tre giorni in stock.move.line
+        stock_inventory = self.env['stock.move.line'].search([('date', '>=', first_date), ('date', '<=', last_date), '|', ('location_id', 'ilike', "TITO/IN"), ('location_dest_id', 'ilike', "Customer"), ])
+
+        
+        # Costruisci il contenuto del file XLSX in memoria
+        xlsx_content = io.BytesIO()
+        workbook = xlsxwriter.Workbook(xlsx_content)
+        worksheet = workbook.add_worksheet()
+
+        headers = ["Articolo", "Descrizione", "Lotto", "Hu", "Quantità", "Azione"]
+
+        # Aggiungi gli header alla prima riga
+        for col, header in enumerate(headers):
+            worksheet.write(0, col, header)
+
+        row = 1  # Inizia dalla seconda riga per i dati
+        for record in stock_inventory:
+
+            product = self.env['product.product'].browse(record.product_id.id)
+            lot = self.env['stock.lot'].browse(record.lot_id.id)
+            package = self.env['stock.quant.package'].browse(record.package_id.id)
             
-            # Ottieni la data odierna
-            today_datetime = datetime.now()
-        
-            # Ottieni la data odierna in formato 'dd_mm_YYYY'
-            today = today_datetime.strftime('%d_%m_%Y')
-        
-            # Ottieni il mese corrente e l'anno corrente
-            current_month = today_datetime.strftime('%m')
-            current_year = today_datetime.strftime('%Y')
-        
-            # Log delle informazioni
-            _logger.info(today)
-            _logger.info(current_month)
-            _logger.info(current_year)
-        
-            # Ottieni il primo giorno del mese corrente
-            first_date = today_datetime.replace(day=1,hour=00, minute=00, second=00)
-        
-            # Ottieni l'ultimo giorno del mese corrente
-            # Imposta prima l'ultimo giorno al primo giorno del mese successivo
-            # quindi sottrai un giorno per ottenere l'ultimo giorno del mese corrente
-            last_date = today_datetime.replace(day=1, month=today_datetime.month + 1)
-            last_date = (last_date - timedelta(days=1)).replace(hour=23, minute=59, second=59)
-        
-            # Log delle informazioni
-            _logger.info(first_date)
-            _logger.info(last_date)
-    
-            # Cerca i record degli ultimi tre giorni in stock.move.line
-            stock_inventory = self.env['stock.move.line'].search([('date', '>=', first_date), ('date', '<=', last_date), '|', ('location_id', 'ilike', "TITO/IN"), ('location_dest_id', 'ilike', "Customer"), ])
-    
+            _logger.info(product.barcode)
+            _logger.info(product.name)
+            _logger.info(lot.name)
+            _logger.info(package.name)
+            _logger.info(record.qty_done)
+            action = ""
+            _logger.info(record.location_id.name)
+            if record.location_id.name == "IN":
+                action = "Ricevuto a Tito"
+            elif record.location_dest_id.name == "Customers":
+                action = "Spedito da Tito"
+                
             
-            # Costruisci il contenuto del file XLSX in memoria
-            xlsx_content = io.BytesIO()
-            workbook = xlsxwriter.Workbook(xlsx_content)
-            worksheet = workbook.add_worksheet()
-    
-            headers = ["Articolo", "Descrizione", "Lotto", "Hu", "Quantità", "Azione"]
-    
-            # Aggiungi gli header alla prima riga
-            for col, header in enumerate(headers):
-                worksheet.write(0, col, header)
-    
-            row = 1  # Inizia dalla seconda riga per i dati
-            for record in stock_inventory:
-    
-                product = self.env['product.product'].browse(record.product_id.id)
-                lot = self.env['stock.lot'].browse(record.lot_id.id)
-                package = self.env['stock.quant.package'].browse(record.package_id.id)
-                
-                _logger.info(product.barcode)
-                _logger.info(product.name)
-                _logger.info(lot.name)
-                _logger.info(package.name)
-                _logger.info(record.qty_done)
-                action = ""
-                _logger.info(record.location_id.name)
-                if record.location_id.name == "IN":
-                    action = "Ricevuto a Tito"
-                elif record.location_dest_id.name == "Customers":
-                    action = "Spedito da Tito"
-                    
-                
-                worksheet.write(row, 0, str(product.barcode))
-                worksheet.write(row, 1, str(product.name))
-                worksheet.write(row, 2, str(lot.name))
-                worksheet.write(row, 3, str(package.name))
-                worksheet.write(row, 4, str(record.qty_done))
-                worksheet.write(row, 5, str(action))
-    
-                row += 1  # Passa alla riga successiva per il prossimo stock_move
-    
-            workbook.close()
-    
-            # Imposta l'allegato in Odoo come file XLSX
-            xlsx_content.seek(0)
-            attachment_values = {
-                'name': 'Bancali ingressati nel mese.xlsx',
-                'datas': base64.encodebytes(xlsx_content.getvalue()).decode(),
-                'res_model': self._name,
-                'res_id': self.id,
-                'type': 'binary',
-            }
-            attachment = self.env['ir.attachment'].create(attachment_values)
-    
-            # Invia l'email con l'allegato
-            mail_values = {
-                'subject': 'Bancali movimentati nel mese ' + current_month + "/" + current_year,
-                'email_from': 'noreply@futurasl.com',
-                'email_to': 'antonio.croglia@ferrero.com',
-                'email_cc': 'domenico.gala@futurasl.com, michele.divincenzo@futurasl.com, luca.cocozza@futurasl.com, fabio.righini@futurasl.com, assistenza@futurasl.com',
-                'reply_to': 'domenico.gala@futurasl.com, michele.divincenzo@futurasl.com',
-                'body_html': f"<p>Salve,</br>in allegato bancali movimentati nel mese corrente nel magazzino Ferrero di Tito Scalo (PZ) aggiornato al {last_date.strftime('%d/%m/%Y')}.</br></br>Futura S.p.A.</p>",
-                'attachment_ids': [(4, attachment.id)],  # Aggiungi l'allegato all'email
-            }
-    
-            # Crea e invia l'email utilizzando il metodo create di mail.mail
-            mail = self.env['mail.mail'].sudo().create(mail_values)
-            mail.send()
+            worksheet.write(row, 0, str(product.barcode))
+            worksheet.write(row, 1, str(product.name))
+            worksheet.write(row, 2, str(lot.name))
+            worksheet.write(row, 3, str(package.name))
+            worksheet.write(row, 4, str(record.qty_done))
+            worksheet.write(row, 5, str(action))
+
+            row += 1  # Passa alla riga successiva per il prossimo stock_move
+
+        workbook.close()
+
+        # Imposta l'allegato in Odoo come file XLSX
+        xlsx_content.seek(0)
+        attachment_values = {
+            'name': 'Bancali ingressati nel mese.xlsx',
+            'datas': base64.encodebytes(xlsx_content.getvalue()).decode(),
+            'res_model': self._name,
+            'res_id': self.id,
+            'type': 'binary',
+        }
+        attachment = self.env['ir.attachment'].create(attachment_values)
+
+        # Invia l'email con l'allegato
+        mail_values = {
+            'subject': 'Bancali movimentati nel mese ' + current_month + "/" + current_year,
+            'email_from': 'noreply@futurasl.com',
+            'email_to': 'antonio.croglia@ferrero.com',
+            'email_cc': 'domenico.gala@futurasl.com, michele.divincenzo@futurasl.com, luca.cocozza@futurasl.com, fabio.righini@futurasl.com, assistenza@futurasl.com',
+            'reply_to': 'domenico.gala@futurasl.com, michele.divincenzo@futurasl.com',
+            'body_html': f"<p>Salve,</br>in allegato bancali movimentati nel mese corrente nel magazzino Ferrero di Tito Scalo (PZ) aggiornato al {last_date.strftime('%d/%m/%Y')}.</br></br>Futura S.p.A.</p>",
+            'attachment_ids': [(4, attachment.id)],  # Aggiungi l'allegato all'email
+        }
+
+        # Crea e invia l'email utilizzando il metodo create di mail.mail
+        mail = self.env['mail.mail'].sudo().create(mail_values)
+        mail.send()
         
     # Questa funzione serve a mandare un reminder ai rop di Tito avvisandoli che entro le ore 23:00 del giorno stesso devono essere convalidati tutti gli ordini di merce che sono stati preparati    
     def reminder_close_order(self):
