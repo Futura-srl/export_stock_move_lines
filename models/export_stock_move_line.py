@@ -364,6 +364,7 @@ class StockMoveLineExport(models.Model):
         
         # Ottieni la data odierna
         today_datetime = datetime.now()
+        today_datetime = today_datetime - timedelta(days=1)
     
         # Ottieni la data odierna in formato 'dd_mm_YYYY'
         today = today_datetime.strftime('%d_%m_%Y')
