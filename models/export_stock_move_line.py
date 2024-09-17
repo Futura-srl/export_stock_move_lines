@@ -392,7 +392,7 @@ class StockMoveLineExport(models.Model):
         _logger.info(last_date)
 
         # Cerca i record degli ultimi tre giorni in stock.move.line
-        stock_inventory = self.env['stock.move.line'].search([('date', '>=', first_date), ('date', '<=', last_date), '|', ('location_id', 'ilike', "TITO/IN"), ('location_dest_id', 'ilike', "Customer"), ])
+        stock_inventory = self.env['stock.move.line'].search([('date', '>=', first_date), ('date', '<=', last_date), '|', ('picking_id.picking_type_id.code', '=', 'incoming'), ('location_dest_id', 'ilike', "Customer"), ])
 
         
         # Costruisci il contenuto del file XLSX in memoria
