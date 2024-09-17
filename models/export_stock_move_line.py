@@ -229,7 +229,7 @@ class StockMoveLineExport(models.Model):
             'subject': 'Inventario Ferrero Tito Scalo del ' + export_datetime,
             'email_from': 'noreply@futurasl.com',
             'email_to': 'antonio.croglia@ferrero.com',
-            'email_cc': 'domenico.gala@futurasl.com, michele.divincenzo@futurasl.com, luca.cocozza@futurasl.com, fabio.righini@futurasl.com',
+            'email_cc': 'domenico.gala@futurasl.com, michele.divincenzo@futurasl.com, luca.cocozza@futurasl.com, fabio.righini@futurasl.com, luciano.pantaleo@ferrero.com, paolo.villani@ferrero.com, sergio.russo@ferrero.com, edvige.donnarumma@ferrero.com',
             'reply_to': 'domenico.gala@futurasl.com, michele.divincenzo@futurasl.com',
             'body_html': "<p>Salve,</br>in allegato copia inventario del magazzino Ferrero di Tito Scalo (PZ).</br></br>Futura S.p.A.</p>",
             'attachment_ids': [(4, attachment.id)],  # Aggiungi l'allegato all'email
