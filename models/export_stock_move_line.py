@@ -434,7 +434,7 @@ class StockMoveLineExport(models.Model):
 
             product = self.env['product.product'].browse(record.product_id.id)
             lot = self.env['stock.lot'].browse(record.lot_id.id)
-            package = self.env['stock.quant.package'].browse(record.package_id.id)
+            package = self.env['stock.quant.package'].browse(record.result_package_id.id)
             
             _logger.info(product.barcode)
             _logger.info(product.name)
@@ -443,10 +443,8 @@ class StockMoveLineExport(models.Model):
             _logger.info(record.qty_done)
             action = ""
             _logger.info(record.location_id.name)
-            if record.location_id.name == "IN":
-                action = "Ricevuto a Tito"
-            elif record.location_dest_id.name == "Customers":
-                action = "Spedito da Tito"
+            action = "Ricevuto a Tito"
+            
                 
             
             worksheet.write(row, 0, str(product.barcode))
@@ -457,13 +455,13 @@ class StockMoveLineExport(models.Model):
             worksheet.write(row, 5, str(action))
 
             row += 1  # Passa alla riga successiva per il prossimo stock_move
-            
+
         # Gestione delle movimentazioni in uscita
         for record in out_stock_inventory:
 
             product = self.env['product.product'].browse(record.product_id.id)
             lot = self.env['stock.lot'].browse(record.lot_id.id)
-            package = self.env['stock.quant.package'].browse(record.package_id.id)
+            package = self.env['stock.quant.package'].browse(record.result_package_id.id)
 
             _logger.info(product.barcode)
             _logger.info(product.name)
