@@ -413,7 +413,7 @@ class StockMoveLineExport(models.Model):
             for product in products:
                 _logger.info(product)
         # Cerca i record in entrata dell'ultimo mese in stock.move.line
-        stock_inventory = self.env['stock.move.line'].search([('product_id', 'in', products.ids), ('date', '>=', first_date), ('date', '<=', last_date), '|', ('picking_id.picking_type_id.code', '=', 'incoming'), ('location_dest_id', 'in', [80]), ])
+        stock_inventory = self.env['stock.move.line'].search([('product_id', 'in', products.ids), ('date', '>=', first_date), ('date', '<=', last_date), ('picking_id.picking_type_id.code', '=', 'incoming'), ('location_dest_id', 'in', [80]), ])
         # Cerca i record in uscita dell'ultimo mese in stock.move.line
         out_stock_inventory = self.env['stock.move.line'].search([('product_id', 'in', products.ids), ('date', '>=', first_date), ('date', '<=', last_date), ('picking_id.picking_type_id.code', '=', 'outgoing'), ('location_dest_id', 'in', [5]), ])
         
@@ -444,7 +444,7 @@ class StockMoveLineExport(models.Model):
             action = ""
             _logger.info(record.location_id.name)
             action = "Ricevuto a Tito"
-            
+
                 
             
             worksheet.write(row, 0, str(product.barcode))
