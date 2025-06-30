@@ -412,9 +412,10 @@ class StockMoveLineExport(models.Model):
             _logger.info("Stampo tutti i prodotti con product_tag_ids 1")
             for product in products:
                 _logger.info(product)
-        # Cerca i record degli ultimi tre giorni in stock.move.line
-        stock_inventory = self.env['stock.move.line'].search([('product_id', 'in', products.ids), ('date', '>=', first_date), ('date', '<=', last_date), '|', ('picking_id.picking_type_id.code', '=', 'incoming'), ('location_dest_id', 'ilike', "Customer"), ])
-
+        # Cerca i record in entrata dell'ultimo mese in stock.move.line
+        stock_inventory = self.env['stock.move.line'].search([('product_id', 'in', products.ids), ('date', '>=', first_date), ('date', '<=', last_date), '|', ('picking_id.picking_type_id.code', '=', 'incoming'), ('location_dest_id', 'in', [80]), ])
+        # Cerca i record in uscita dell'ultimo mese in stock.move.line
+        out_stock_inventory = self.env['stock.move.line'].search([('product_id', 'in', products.ids), ('date', '>=', first_date), ('date', '<=', last_date), ('picking_id.picking_type_id.code', '=', 'outgoing'), ('location_dest_id', 'in', [5]), ])
         
         # Costruisci il contenuto del file XLSX in memoria
         xlsx_content = io.BytesIO()
@@ -428,6 +429,7 @@ class StockMoveLineExport(models.Model):
             worksheet.write(0, col, header)
 
         row = 1  # Inizia dalla seconda riga per i dati
+        # Gestione delle movimentazioni in entrata
         for record in stock_inventory:
 
             product = self.env['product.product'].browse(record.product_id.id)
@@ -447,6 +449,33 @@ class StockMoveLineExport(models.Model):
                 action = "Spedito da Tito"
                 
             
+            worksheet.write(row, 0, str(product.barcode))
+            worksheet.write(row, 1, str(product.name))
+            worksheet.write(row, 2, str(lot.name))
+            worksheet.write(row, 3, str(package.name))
+            worksheet.write(row, 4, str(record.qty_done))
+            worksheet.write(row, 5, str(action))
+
+            row += 1  # Passa alla riga successiva per il prossimo stock_move
+            
+        # Gestione delle movimentazioni in uscita
+        for record in out_stock_inventory:
+
+            product = self.env['product.product'].browse(record.product_id.id)
+            lot = self.env['stock.lot'].browse(record.lot_id.id)
+            package = self.env['stock.quant.package'].browse(record.package_id.id)
+
+            _logger.info(product.barcode)
+            _logger.info(product.name)
+            _logger.info(lot.name)
+            _logger.info(package.name)
+            _logger.info(record.qty_done)
+            action = ""
+            _logger.info(record.location_id.name)
+
+
+            action = "Spedito da Tito"
+
             worksheet.write(row, 0, str(product.barcode))
             worksheet.write(row, 1, str(product.name))
             worksheet.write(row, 2, str(lot.name))
