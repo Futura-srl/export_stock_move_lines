@@ -173,8 +173,16 @@ class StockMoveLineExport(models.Model):
         today = datetime.now().strftime('%d_%m_%Y')
         export_datetime = datetime.now().strftime('%d/%m/%Y %H:%M:%S')
 
+        # Log delle informazioni
+        products = self.env['product.product'].search([('product_tag_ids', '=', 1)])
+
+        if test == 1:
+            _logger.info("Stampo tutti i prodotti con product_tag_ids 1")
+            for product in products:
+                _logger.info(product)
+
         # Cerca i record degli ultimi tre giorni in stock.move.line
-        stock_inventory = self.env['stock.quant'].search(['|', ('location_id', 'ilike', "TITO/IN"), ('location_id', 'ilike', "TITO/ST")])
+        stock_inventory = self.env['stock.quant'].search([('product_id', 'in', products.ids),'|', ('location_id', 'ilike', "TITO/IN"), ('location_id', 'ilike', "TITO/ST")])
 
         
         # Costruisci il contenuto del file XLSX in memoria
@@ -399,9 +407,11 @@ class StockMoveLineExport(models.Model):
 
         # Cerco tutti i prodotti che hanno come product_tag_ids 1
         products = self.env['product.product'].search([('product_tag_ids', '=', 1)])
-        _logger.info("Stampo tutti i prodotti con product_tag_ids 1")
-        for product in products:
-            _logger.info(product)
+
+        if test == 1:
+            _logger.info("Stampo tutti i prodotti con product_tag_ids 1")
+            for product in products:
+                _logger.info(product)
         # Cerca i record degli ultimi tre giorni in stock.move.line
         stock_inventory = self.env['stock.move.line'].search([('product_id', 'in', products.ids), ('date', '>=', first_date), ('date', '<=', last_date), '|', ('picking_id.picking_type_id.code', '=', 'incoming'), ('location_dest_id', 'ilike', "Customer"), ])
 
