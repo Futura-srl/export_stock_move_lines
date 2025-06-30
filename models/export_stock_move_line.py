@@ -169,7 +169,7 @@ class StockMoveLineExport(models.Model):
 
 
     # Funzione per esportare l'inventario di Tito Scalo
-    def export_inventory_Ferrero_Tito_Scalo_xlsx(self):
+    def export_inventory_Ferrero_Tito_Scalo_xlsx(self, test=0, email_to='', email_cc='', reply_to=''):
         today = datetime.now().strftime('%d_%m_%Y')
         export_datetime = datetime.now().strftime('%d/%m/%Y %H:%M:%S')
 
@@ -228,12 +228,17 @@ class StockMoveLineExport(models.Model):
         mail_values = {
             'subject': 'Inventario Ferrero Tito Scalo del ' + export_datetime,
             'email_from': 'noreply@futurasl.com',
-            'email_to': 'antonio.croglia@ferrero.com',
-            'email_cc': 'domenico.gala@futurasl.com, michele.divincenzo@futurasl.com, luca.cocozza@futurasl.com, fabio.righini@futurasl.com, luciano.pantaleo@ferrero.com, paolo.villani@ferrero.com, sergio.russo@ferrero.com, edvige.donnarumma@ferrero.com',
-            'reply_to': 'domenico.gala@futurasl.com, michele.divincenzo@futurasl.com',
+            'email_to': email_to,
+            'email_cc': email_cc,
+            'reply_to': reply_to,
             'body_html': "<p>Salve,</br>in allegato copia inventario del magazzino Ferrero di Tito Scalo (PZ).</br></br>Futura S.p.A.</p>",
             'attachment_ids': [(4, attachment.id)],  # Aggiungi l'allegato all'email
         }
+
+        if test == 1:
+            mail_values['email_to'] = 'luca.cocozza@futurasl.com'
+            mail_values['email_cc'] = 'luca2.cocozza@futurasl.com'
+            mail_values['reply_to'] = 'luca3.cocozza@futurasl.com'
 
         # Crea e invia l'email utilizzando il metodo create di mail.mail
         mail = self.env['mail.mail'].sudo().create(mail_values)
@@ -355,7 +360,7 @@ class StockMoveLineExport(models.Model):
             return False
 
     
-    def export_pallet_in_fepz(self):
+    def export_pallet_in_fepz(self, test=0, email_to='', email_cc='', reply_to=''):
         # result = self.check(5)
         # if result == False:
         #     _logger.info("La data non è giusta")
@@ -391,8 +396,14 @@ class StockMoveLineExport(models.Model):
         _logger.info(first_date)
         _logger.info(last_date)
 
+
+        # Cerco tutti i prodotti che hanno come product_tag_ids 1
+        products = self.env['product.product'].search([('product_tag_ids', '=', 1)])
+        _logger.info("Stampo tutti i prodotti con product_tag_ids 1")
+        for product in products:
+            _logger.info(product)
         # Cerca i record degli ultimi tre giorni in stock.move.line
-        stock_inventory = self.env['stock.move.line'].search([('date', '>=', first_date), ('date', '<=', last_date), '|', ('picking_id.picking_type_id.code', '=', 'incoming'), ('location_dest_id', 'ilike', "Customer"), ])
+        stock_inventory = self.env['stock.move.line'].search([('product_id', 'in', products.ids), ('date', '>=', first_date), ('date', '<=', last_date), '|', ('picking_id.picking_type_id.code', '=', 'incoming'), ('location_dest_id', 'ilike', "Customer"), ])
 
         
         # Costruisci il contenuto del file XLSX in memoria
@@ -452,12 +463,18 @@ class StockMoveLineExport(models.Model):
         mail_values = {
             'subject': 'Bancali movimentati nel mese ' + current_month + "/" + current_year,
             'email_from': 'noreply@futurasl.com',
-            'email_to': 'antonio.croglia@ferrero.com',
-            'email_cc': 'domenico.gala@futurasl.com, michele.divincenzo@futurasl.com, luca.cocozza@futurasl.com, fabio.righini@futurasl.com, assistenza@futurasl.com',
-            'reply_to': 'domenico.gala@futurasl.com, michele.divincenzo@futurasl.com',
+            'email_to': email_to, # 'antonio.croglia@ferrero.com',
+            'email_cc': email_cc,
+            'reply_to': reply_to,
             'body_html': f"<p>Salve,</br>in allegato bancali movimentati nel mese corrente nel magazzino Ferrero di Tito Scalo (PZ) aggiornato al {last_date.strftime('%d/%m/%Y')}.</br></br>Futura S.p.A.</p>",
             'attachment_ids': [(4, attachment.id)],  # Aggiungi l'allegato all'email
         }
+
+
+        if test == 1:
+            mail_values['email_to'] = 'luca.cocozza@futurasl.com'
+            mail_values['email_cc'] = 'luca2.cocozza@futurasl.com'
+            mail_values['reply_to'] = 'luca3.cocozza@futurasl.com'
 
         # Crea e invia l'email utilizzando il metodo create di mail.mail
         mail = self.env['mail.mail'].sudo().create(mail_values)
