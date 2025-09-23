@@ -57,7 +57,7 @@ class StockMoveLineExport(models.Model):
             
             worksheet.write(row, 0, str(record_id))
             worksheet.write(row, 1, str(stock_move.batch_id.id))
-            worksheet.write(row, 2, str(branch.name))
+            worksheet.write(row, 2, str(branch))
             worksheet.write(row, 3, str(company.name))
             worksheet.write(row, 4, str(create_uid.name))
             worksheet.write(row, 5, str(stock_move.date))
