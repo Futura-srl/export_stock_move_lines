@@ -17,7 +17,7 @@ class StockMoveLineExport(models.Model):
         today = datetime.now()
 
         # Cerca i record degli ultimi tre giorni in stock.move.line
-        stock_moves = self.env['stock.move.line'].search([('date', '>=', three_days_ago.strftime('%Y-%m-%d')), ('branch_id', '=', 1)])
+        stock_moves = self.env['stock.move.line'].search([('date', '>=', three_days_ago.strftime('%Y-%m-%d'))])
 
         _logger.info(three_days_ago)
         
@@ -40,7 +40,8 @@ class StockMoveLineExport(models.Model):
             #batch_transfer = self.env['stock.picking.batch'].browse(stock_move.batch_id.id)
             location = self.env['stock.location'].browse(stock_move.picking_location_dest_id.id)
             company = self.env['res.company'].browse(stock_move.company_id.id)
-            branch = self.env['res.branch'].browse(stock_move.branch_id.id)
+            # branch = self.env['res.branch'].browse(stock_move.branch_id.id)
+            branch = ""
             destination_packages = self.env['stock.quant.package'].browse(stock_move.result_package_id.id)
             create_uid = self.env['res.users'].browse(stock_move.create_uid.id)
             write_uid = self.env['res.users'].browse(stock_move.write_uid.id)
