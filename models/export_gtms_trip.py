@@ -28,7 +28,7 @@ class GtmsTripExport(models.Model):
         workbook = xlsxwriter.Workbook(xlsx_content)
         worksheet = workbook.add_worksheet()
 
-        headers = ['Id', 'Codice Viaggio', 'Trip Type', 'Source Document', 'From', 'Datetime start pianificato', 'To', 'Datetime end pianificato', 'Organization', 'N Stops', 'Datetime start sondaggio', 'Datetime end sondaggio', 'Vehicle', 'Vehicle ID', 'ID Driver', 'Driver', 'Pwork Az 1', 'Pwork Dip 1', 'ID Learning Driver', 'Driver learning', 'Pwork Az Learning', 'Pwork Dip Learning', 'Modalità pagamento', 'State', 'Distance Expected']
+        headers = ['Id', 'Codice Viaggio', 'Trip Type', 'Source Document', 'From', 'Datetime start pianificato', 'To', 'Datetime end pianificato', 'Organization', 'N Stops', 'Datetime start sondaggio', 'Datetime end sondaggio', 'Vehicle', 'Vehicle ID', 'ID Driver', 'Driver', 'Pwork Az 1', 'Pwork Dip 1', 'ID Learning Driver', 'Driver learning', 'Pwork Az Learning', 'Pwork Dip Learning', 'Modalità pagamento', 'State', 'Distance Expected', 'Total Sales', 'Total Purchases']
 
         # Aggiungi gli header alla prima riga
         for col, header in enumerate(headers):
@@ -36,7 +36,7 @@ class GtmsTripExport(models.Model):
 
         row = 1  # Inizia dalla seconda riga per i dati
         for gtms_trip_id in gtms_trips:
-            gtms_trip = self.env['gtms.trip'].search_read([('id', '=', gtms_trip_id.id)],['id','name','trip_type_id','source_document','from_address_partner_id','to_address_partner_id','first_stop_planned_at','last_stop_planned_at','organization_id','number_of_stops','trip_start_from_survey','trip_end_from_survey', 'current_fleet_id', 'all_drivers_ids', 'drivers_payment', 'state', 'distance_expected'], limit=1, order="id asc")
+            gtms_trip = self.env['gtms.trip'].search_read([('id', '=', gtms_trip_id.id)],['id','name','trip_type_id','source_document','from_address_partner_id','to_address_partner_id','first_stop_planned_at','last_stop_planned_at','organization_id','number_of_stops','trip_start_from_survey','trip_end_from_survey', 'current_fleet_id', 'all_drivers_ids', 'drivers_payment', 'state', 'distance_expected', ''], limit=1, order="id asc")
             # id = self.env['gtms.trip'].browse(gtms_trip.id)
             # record_id = int(str(id).split('(')[1].split(',')[0])
             _logger.info(gtms_trip)
@@ -126,6 +126,14 @@ class GtmsTripExport(models.Model):
                 distance_expected = gtms_trip[0]['distance_expected']
             else:
                 distance_expected = ''
+            if gtms_trip[0]['total_sales'] != False:
+                total_sales = gtms_trip[0]['total_sales']
+            else:
+                total_sales = ''
+            if gtms_trip[0]['total_purchases'] != False:
+                total_purchases = gtms_trip[0]['total_purchases']
+            else:
+                total_purchases = ''
 
             
             _logger.info(id)
@@ -236,7 +244,8 @@ class GtmsTripExport(models.Model):
             worksheet.write(row, 22, str(drivers_payment))
             worksheet.write(row, 23, str(state))
             worksheet.write(row, 24, str(distance_expected))
-
+            worksheet.write(row, 25, str(total_sales))
+            worksheet.write(row, 26, str(total_purchases))
 
 
             row += 1  # Passa alla riga successiva per il prossimo stock_move
