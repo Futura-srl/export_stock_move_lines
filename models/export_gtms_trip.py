@@ -36,7 +36,7 @@ class GtmsTripExport(models.Model):
 
         row = 1  # Inizia dalla seconda riga per i dati
         for gtms_trip_id in gtms_trips:
-            gtms_trip = self.env['gtms.trip'].search_read([('id', '=', gtms_trip_id.id)],['id','name','trip_type_id','source_document','from_address_partner_id','to_address_partner_id','first_stop_planned_at','last_stop_planned_at','organization_id','number_of_stops','trip_start_from_survey','trip_end_from_survey', 'current_fleet_id', 'all_drivers_ids', 'drivers_payment', 'state', 'distance_expected', ''], limit=1, order="id asc")
+            gtms_trip = self.env['gtms.trip'].search_read([('id', '=', gtms_trip_id.id)],['id','name','trip_type_id','source_document','from_address_partner_id','to_address_partner_id','first_stop_planned_at','last_stop_planned_at','organization_id','number_of_stops','trip_start_from_survey','trip_end_from_survey', 'current_fleet_id', 'all_drivers_ids', 'drivers_payment', 'state', 'distance_expected', 'total_sales', 'total_purchases'], limit=1, order="id asc")
             # id = self.env['gtms.trip'].browse(gtms_trip.id)
             # record_id = int(str(id).split('(')[1].split(',')[0])
             _logger.info(gtms_trip)
