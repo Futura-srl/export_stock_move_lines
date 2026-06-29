@@ -28,7 +28,7 @@ class GtmsTripExport(models.Model):
         workbook = xlsxwriter.Workbook(xlsx_content)
         worksheet = workbook.add_worksheet()
 
-        headers = ['Id', 'Codice Viaggio', 'Trip Type', 'Source Document', 'From', 'Datetime start pianificato', 'To', 'Datetime end pianificato', 'Organization', 'N Stops', 'Datetime start sondaggio', 'Datetime end sondaggio', 'Vehicle', 'Vehicle ID', 'ID Driver', 'Driver', 'Pwork Az 1', 'Pwork Dip 1', 'ID Learning Driver', 'Driver learning', 'Pwork Az Learning', 'Pwork Dip Learning', 'Modalità pagamento', 'State', 'Distance Expected', 'Total Sales', 'Total Purchases']
+        headers = ['Id', 'Codice Viaggio', 'Trip Type', 'Source Document', 'From', 'Datetime start pianificato', 'To', 'Datetime end pianificato', 'Organization', 'N Stops', 'Datetime start sondaggio', 'Datetime end sondaggio', 'Vehicle', 'Vehicle ID', 'ID Driver', 'Driver', 'Pwork Az 1', 'Pwork Dip 1', 'ID Learning Driver', 'Driver learning', 'Pwork Az Learning', 'Pwork Dip Learning', 'Modalità pagamento', 'State', 'Distance Expected', 'Total Sales', 'Total Purchases', 'Cliente', 'Vettore', 'Numero OC', 'Numero Ddt', 'Anticipo Partenza', 'Anticipo Partenza Extra', 'Totale Documenti', 'Totale documenti fornitore', 'Totale documenti fornitore completi', 'Km cliente', 'Città partenza', 'CAP partenza', 'Stato partenza', 'Provincia partenza', 'Indirizzo di partenza', 'Città arrivo', 'CAP arrivo', 'Stato arrivo', 'Provincia arrivo', 'Indirizzo di arrivo', 'KM GPS']
 
         # Aggiungi gli header alla prima riga
         for col, header in enumerate(headers):
@@ -36,7 +36,7 @@ class GtmsTripExport(models.Model):
 
         row = 1  # Inizia dalla seconda riga per i dati
         for gtms_trip_id in gtms_trips:
-            gtms_trip = self.env['gtms.trip'].search_read([('id', '=', gtms_trip_id.id)],['id','name','trip_type_id','source_document','from_address_partner_id','to_address_partner_id','first_stop_planned_at','last_stop_planned_at','organization_id','number_of_stops','trip_start_from_survey','trip_end_from_survey', 'current_fleet_id', 'all_drivers_ids', 'drivers_payment', 'state', 'distance_expected', 'total_sales', 'total_purchases'], limit=1, order="id asc")
+            gtms_trip = self.env['gtms.trip'].search_read([('id', '=', gtms_trip_id.id)],['id','name','trip_type_id','source_document','from_address_partner_id','to_address_partner_id','first_stop_planned_at','last_stop_planned_at','organization_id','number_of_stops','trip_start_from_survey','trip_end_from_survey', 'current_fleet_id', 'all_drivers_ids', 'drivers_payment', 'state', 'distance_expected', 'total_sales', 'total_purchases', 'related_customer_id', 'related_supplier_id', 'oc_number', 'ddt_number', 'anticipo_partneza', 'anticipo_partenza_extra', 'total_documents', 'total_supplier_documents', 'total_complete_supplier_documents', 'km_from_customer', 'from_city', 'from_zip', 'from_country_id', 'from_state_id', 'from_street', 'to_city', 'to_zip', 'to_country_id', 'to_state_id', 'to_street', 'gps_km'], limit=1, order="id asc")
             # id = self.env['gtms.trip'].browse(gtms_trip.id)
             # record_id = int(str(id).split('(')[1].split(',')[0])
             _logger.info(gtms_trip)
@@ -134,6 +134,90 @@ class GtmsTripExport(models.Model):
                 total_purchases = gtms_trip[0]['total_purchases']
             else:
                 total_purchases = ''
+            if gtms_trip[0]['related_customer_id'] != False:
+                related_customer_id = gtms_trip[0]['related_customer_id'][1]
+            else:
+                related_customer_id = ''
+            if gtms_trip[0]['related_supplier_id'] != False:
+                related_supplier_id = gtms_trip[0]['related_supplier_id'][1]
+            else:
+                related_supplier_id = ''
+            if gtms_trip[0]['oc_number'] != False:
+                oc_number = gtms_trip[0]['oc_number']
+            else:
+                oc_number = ''
+            if gtms_trip[0]['ddt_number'] != False:
+                ddt_number = gtms_trip[0]['ddt_number']
+            else:
+                ddt_number = ''
+            if gtms_trip[0]['anticipo_partneza'] != False:
+                anticipo_partneza = gtms_trip[0]['anticipo_partneza']
+            else:
+                anticipo_partneza = ''
+            if gtms_trip[0]['anticipo_partenza_extra'] != False:
+                anticipo_partenza_extra = gtms_trip[0]['anticipo_partenza_extra']
+            else:
+                anticipo_partenza_extra = ''
+            if gtms_trip[0]['total_documents'] != False:
+                total_documents = gtms_trip[0]['total_documents']
+            else:
+                total_documents = ''
+            if gtms_trip[0]['total_supplier_documents'] != False:
+                total_supplier_documents = gtms_trip[0]['total_supplier_documents']
+            else:
+                total_supplier_documents = ''
+            if gtms_trip[0]['total_complete_supplier_documents'] != False:
+                total_complete_supplier_documents = gtms_trip[0]['total_complete_supplier_documents']
+            else:
+                total_complete_supplier_documents = ''
+            if gtms_trip[0]['km_from_customer'] != False:
+                km_from_customer = gtms_trip[0]['km_from_customer']
+            else:
+                km_from_customer = ''
+            if gtms_trip[0]['from_city'] != False:
+                from_city = gtms_trip[0]['from_city']
+            else:
+                from_city = ''
+            if gtms_trip[0]['from_zip'] != False:
+                from_zip = gtms_trip[0]['from_zip']
+            else:
+                from_zip = ''
+            if gtms_trip[0]['from_country_id'] != False:
+                from_country_id = gtms_trip[0]['from_country_id'][1]
+            else:
+                from_country_id = ''
+            if gtms_trip[0]['from_state_id'] != False:
+                from_state_id = gtms_trip[0]['from_state_id'][1]
+            else:
+                from_state_id = ''
+            if gtms_trip[0]['from_street'] != False:
+                from_street = gtms_trip[0]['from_street']
+            else:
+                from_street = ''
+            if gtms_trip[0]['to_city'] != False:
+                to_city = gtms_trip[0]['to_city']
+            else:
+                to_city = ''
+            if gtms_trip[0]['to_zip'] != False:
+                to_zip = gtms_trip[0]['to_zip']
+            else:
+                to_zip = ''
+            if gtms_trip[0]['to_country_id'] != False:
+                to_country_id = gtms_trip[0]['to_country_id'][1]
+            else:
+                to_country_id = ''
+            if gtms_trip[0]['to_state_id'] != False:
+                to_state_id = gtms_trip[0]['to_state_id'][1]
+            else:
+                to_state_id = ''
+            if gtms_trip[0]['to_street'] != False:
+                to_street = gtms_trip[0]['to_street']
+            else:
+                to_street = ''
+            if gtms_trip[0]['gps_km'] != False:
+                gps_km = gtms_trip[0]['gps_km']
+            else:
+                gps_km = ''
 
             
             _logger.info(id)
@@ -160,6 +244,29 @@ class GtmsTripExport(models.Model):
             _logger.info(drivers_payment)
             _logger.info(state)
             _logger.info(distance_expected)
+            _logger.info(total_sales)
+            _logger.info(total_purchases)
+            _logger.info(related_customer_id)
+            _logger.info(related_supplier_id)
+            _logger.info(oc_number)
+            _logger.info(ddt_number)
+            _logger.info(anticipo_partneza)
+            _logger.info(anticipo_partenza_extra)
+            _logger.info(total_documents)
+            _logger.info(total_supplier_documents)
+            _logger.info(total_complete_supplier_documents)
+            _logger.info(km_from_customer)
+            _logger.info(from_city)
+            _logger.info(from_zip)
+            _logger.info(from_country_id)
+            _logger.info(from_state_id)
+            _logger.info(from_street)
+            _logger.info(to_city)
+            _logger.info(to_zip)
+            _logger.info(to_country_id)
+            _logger.info(to_state_id)
+            _logger.info(to_street)
+            _logger.info(gps_km)
 
             id_az_pwork_1 = ''
             id_dip_pwork_1 = ''
@@ -246,6 +353,27 @@ class GtmsTripExport(models.Model):
             worksheet.write(row, 24, str(distance_expected))
             worksheet.write(row, 25, str(total_sales))
             worksheet.write(row, 26, str(total_purchases))
+            worksheet.write(row, 27, str(related_customer_id))
+            worksheet.write(row, 28, str(related_supplier_id))
+            worksheet.write(row, 29, str(oc_number))
+            worksheet.write(row, 30, str(ddt_number))
+            worksheet.write(row, 31, str(anticipo_partneza))
+            worksheet.write(row, 32, str(anticipo_partenza_extra))
+            worksheet.write(row, 33, str(total_documents))
+            worksheet.write(row, 34, str(total_supplier_documents))
+            worksheet.write(row, 35, str(total_complete_supplier_documents))
+            worksheet.write(row, 36, str(km_from_customer))
+            worksheet.write(row, 37, str(from_city))
+            worksheet.write(row, 38, str(from_zip))
+            worksheet.write(row, 39, str(from_country_id))
+            worksheet.write(row, 40, str(from_state_id))
+            worksheet.write(row, 41, str(from_street))
+            worksheet.write(row, 42, str(to_city))
+            worksheet.write(row, 43, str(to_zip))
+            worksheet.write(row, 44, str(to_country_id))
+            worksheet.write(row, 45, str(to_state_id))
+            worksheet.write(row, 46, str(to_street))
+            worksheet.write(row, 47, str(gps_km))
 
 
             row += 1  # Passa alla riga successiva per il prossimo stock_move
