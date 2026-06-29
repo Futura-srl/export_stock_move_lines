@@ -36,7 +36,7 @@ class GtmsTripExport(models.Model):
 
         row = 1  # Inizia dalla seconda riga per i dati
         for gtms_trip_id in gtms_trips:
-            gtms_trip = self.env['gtms.trip'].search_read([('id', '=', gtms_trip_id.id)],['id','name','trip_type_id','source_document','from_address_partner_id','to_address_partner_id','first_stop_planned_at','last_stop_planned_at','organization_id','number_of_stops','trip_start_from_survey','trip_end_from_survey', 'current_fleet_id', 'all_drivers_ids', 'drivers_payment', 'state', 'distance_expected', 'total_sales', 'total_purchases', 'related_customer_id', 'related_supplier_id', 'oc_number', 'ddt_number', 'anticipo_partneza', 'anticipo_partenza_extra', 'total_documents', 'total_supplier_documents', 'total_complete_supplier_documents', 'km_from_customer', 'from_city', 'from_zip', 'from_country_id', 'from_state_id', 'from_street', 'to_city', 'to_zip', 'to_country_id', 'to_state_id', 'to_street', 'gps_km'], limit=1, order="id asc")
+            gtms_trip = self.env['gtms.trip'].search_read([('id', '=', gtms_trip_id.id)],['id','name','trip_type_id','source_document','from_address_partner_id','to_address_partner_id','first_stop_planned_at','last_stop_planned_at','organization_id','number_of_stops','trip_start_from_survey','trip_end_from_survey', 'current_fleet_id', 'all_drivers_ids', 'drivers_payment', 'state', 'distance_expected', 'total_sales', 'total_purchases', 'related_customer_id', 'related_supplier_id', 'oc_number', 'ddt_number', 'anticipo_partenza', 'anticipo_partenza_extra', 'total_documents', 'total_supplier_documents', 'total_complete_supplier_documents', 'km_from_customer', 'from_city', 'from_zip', 'from_country_id', 'from_state_id', 'from_street', 'to_city', 'to_zip', 'to_country_id', 'to_state_id', 'to_street', 'gps_km'], limit=1, order="id asc")
             # id = self.env['gtms.trip'].browse(gtms_trip.id)
             # record_id = int(str(id).split('(')[1].split(',')[0])
             _logger.info(gtms_trip)
@@ -150,8 +150,8 @@ class GtmsTripExport(models.Model):
                 ddt_number = gtms_trip[0]['ddt_number']
             else:
                 ddt_number = ''
-            if gtms_trip[0]['anticipo_partneza'] != False:
-                anticipo_partneza = gtms_trip[0]['anticipo_partneza']
+            if gtms_trip[0]['anticipo_partenza'] != False:
+                anticipo_partneza = gtms_trip[0]['anticipo_partenza']
             else:
                 anticipo_partneza = ''
             if gtms_trip[0]['anticipo_partenza_extra'] != False:
