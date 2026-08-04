@@ -1,6 +1,6 @@
 {
     'name': 'export_stock_move_line',
-    'version': '17.0',
+    'version': '19.0.1.0.0',
     'author': "Luca Cocozza",
     'application': True,
     'description': "Esportazione stock move line.",
