@@ -278,7 +278,7 @@ class GtmsTripExport(models.Model):
                 employee_id_1 = self.env['hr.employee'].search_read([('address_home_id', '=', driver_1_id)], ['id'])
                 _logger.info(employee_id_1)
                 for employee_1 in employee_id_1:
-                    employee_contract_id_1 = self.env['hr.contract'].search_read([('employee_id', '=', employee_1['id']),('date_start', '<=', first_stop_planned_at), '|', ('date_end', '=', False), ('date_end', '>=', first_stop_planned_at)],['id'])
+                    employee_contract_id_1 = self.env['hr.version'].search_read([('employee_id', '=', employee_1['id']),('contract_date_start', '<=', first_stop_planned_at), '|', ('contract_date_end', '=', False), ('contract_date_end', '>=', first_stop_planned_at)],['id'])
                     _logger.info("STAMPO contratto attivo")
                     if employee_contract_id_1 != []:
                         _logger.info(employee_contract_id_1)
@@ -304,7 +304,7 @@ class GtmsTripExport(models.Model):
                 for employee_2 in employee_id_2:
                     _logger.info("STAMPO ID 2")
                     _logger.info(driver_2_id)
-                    employee_contract_id_2 = self.env['hr.contract'].search_read([('employee_id', '=', employee_2['id']),('date_start', '<=', first_stop_planned_at), '|', ('date_end', '=', False), ('date_end', '>=', first_stop_planned_at)],['id'])
+                    employee_contract_id_2 = self.env['hr.version'].search_read([('employee_id', '=', employee_2['id']),('contract_date_start', '<=', first_stop_planned_at), '|', ('contract_date_end', '=', False), ('contract_date_end', '>=', first_stop_planned_at)],['id'])
                     _logger.info("STAMPO contratto attivo")
                     if employee_contract_id_2 != []:
                         _logger.info(employee_contract_id_2)

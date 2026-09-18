@@ -1,6 +1,7 @@
 {
     'name': 'export_stock_move_line',
-    'version': '19.0.1.0.0',
+    'version': '19.0.1.0.1',
+    'license': 'OPL-1',
     'author': "Luca Cocozza",
     'application': True,
     'description': "Esportazione stock move line.",
